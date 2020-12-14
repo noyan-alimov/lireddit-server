@@ -12,7 +12,7 @@ import {
 } from 'type-graphql';
 import { MyContext } from '../types';
 import { isAuth } from '../middleware/isAuth';
-import { getConnection } from 'typeorm';
+// import { getConnection } from 'typeorm';
 
 @InputType()
 class PostInput {
@@ -23,26 +23,40 @@ class PostInput {
 	text: string;
 }
 
+const paginatePosts = (page: number, selection: Post[]) => {
+	const start = (page - 1) * 10;
+	const end = start + 10;
+
+	const posts = [...selection].reverse();
+	return posts.slice(start, end);
+};
+
 @Resolver()
 export class PostResolver {
 	@Query(() => [Post])
-	posts(
-		@Arg('limit', () => Int) limit: number,
-		@Arg('cursor', () => String, { nullable: true }) cursor: string | null
+	async posts(
+		@Arg('page', () => Int) page: number
+		// @Arg('limit', () => Int) limit: number,
+		// @Arg('cursor', () => String, { nullable: true }) cursor: string | null
 	): Promise<Post[]> {
-		const realLimit = Math.min(50, limit);
-		const queryBuilder = getConnection()
-			.getRepository(Post)
-			.createQueryBuilder('p')
-			.orderBy('"createdAt"', 'DESC')
-			.take(realLimit);
-		if (cursor) {
-			queryBuilder.where('"createdAt" < :cursor', {
-				cursor: new Date(parseInt(cursor)),
-			});
-		}
+		const posts = await Post.find({});
+		const paginatedPosts = paginatePosts(page, posts);
 
-		return queryBuilder.getMany();
+		return paginatedPosts;
+
+		// const realLimit = Math.min(50, limit);
+		// const queryBuilder = getConnection()
+		// 	.getRepository(Post)
+		// 	.createQueryBuilder('p')
+		// 	.orderBy('"createdAt"', 'DESC')
+		// 	.take(realLimit);
+		// if (cursor) {
+		// 	queryBuilder.where('"createdAt" < :cursor', {
+		// 		cursor: new Date(parseInt(cursor)),
+		// 	});
+		// }
+
+		// return queryBuilder.getMany();
 	}
 
 	@Query(() => Post, { nullable: true })

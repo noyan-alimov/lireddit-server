@@ -13,6 +13,7 @@ import { MyContext } from './types';
 import { createConnection } from 'typeorm';
 import { User } from './entities/User';
 import { Post } from './entities/Post';
+// import path from 'path';
 
 const main = async () => {
 	const conn = await createConnection({
@@ -22,8 +23,11 @@ const main = async () => {
 		password: 'password',
 		synchronize: true,
 		entities: [Post, User],
+		// migrations: [path.join(__dirname, './migrations/*')],
 		logging: true,
 	});
+
+	// await conn.runMigrations()
 
 	const app = express();
 
