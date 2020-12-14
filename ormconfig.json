@@ -1,0 +1,13 @@
+{
+    "type": "postgres",
+    "database": "lireddit2",
+    "username": "postgres",
+    "password": "password",
+    "synchronize": false,
+    "entities": ["**/entities/*{.js, .ts}"],
+    "migrations": ["**/migrations/*{.js, .ts}"],
+    "logging": true,
+    "cli": {
+        "migrationsDir": "src/migrations"
+    }
+}

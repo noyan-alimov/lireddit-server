@@ -12,7 +12,6 @@ import {
 } from 'type-graphql';
 import { MyContext } from '../types';
 import { isAuth } from '../middleware/isAuth';
-// import { getConnection } from 'typeorm';
 
 @InputType()
 class PostInput {
@@ -34,29 +33,11 @@ const paginatePosts = (page: number, selection: Post[]) => {
 @Resolver()
 export class PostResolver {
 	@Query(() => [Post])
-	async posts(
-		@Arg('page', () => Int) page: number
-		// @Arg('limit', () => Int) limit: number,
-		// @Arg('cursor', () => String, { nullable: true }) cursor: string | null
-	): Promise<Post[]> {
+	async posts(@Arg('page', () => Int) page: number): Promise<Post[]> {
 		const posts = await Post.find({});
 		const paginatedPosts = paginatePosts(page, posts);
 
 		return paginatedPosts;
-
-		// const realLimit = Math.min(50, limit);
-		// const queryBuilder = getConnection()
-		// 	.getRepository(Post)
-		// 	.createQueryBuilder('p')
-		// 	.orderBy('"createdAt"', 'DESC')
-		// 	.take(realLimit);
-		// if (cursor) {
-		// 	queryBuilder.where('"createdAt" < :cursor', {
-		// 		cursor: new Date(parseInt(cursor)),
-		// 	});
-		// }
-
-		// return queryBuilder.getMany();
 	}
 
 	@Query(() => Post, { nullable: true })
