@@ -1,10 +1,7 @@
 import { UsernamePasswordInput } from 'src/types/UsernamePasswordInput';
 import { User } from '../entities/User';
 
-export const validateRegister = async (
-	options: UsernamePasswordInput,
-	em: any
-) => {
+export const validateRegister = async (options: UsernamePasswordInput) => {
 	if (!options.email.includes('@')) {
 		return [
 			{
@@ -32,7 +29,7 @@ export const validateRegister = async (
 		];
 	}
 
-	const isUserTaken = await em.findOne(User, { username: options.username });
+	const isUserTaken = await User.findOne({ username: options.username });
 	if (isUserTaken) {
 		return [
 			{
@@ -51,5 +48,5 @@ export const validateRegister = async (
 		];
 	}
 
-	return null;
+	return undefined;
 };
