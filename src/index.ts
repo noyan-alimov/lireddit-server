@@ -13,7 +13,7 @@ import { MyContext } from './types';
 import { createConnection } from 'typeorm';
 import { User } from './entities/User';
 import { Post } from './entities/Post';
-// import path from 'path';
+import path from 'path';
 
 const main = async () => {
 	const conn = await createConnection({
@@ -21,13 +21,16 @@ const main = async () => {
 		database: 'lireddit2',
 		username: 'postgres',
 		password: 'password',
-		synchronize: true,
+		synchronize: false,
 		entities: [Post, User],
-		// migrations: [path.join(__dirname, './migrations/*')],
+		migrations: [path.join(__dirname, './migrations/*')],
 		logging: true,
+		cli: {
+			migrationsDir: 'migrations',
+		},
 	});
 
-	// await conn.runMigrations()
+	await conn.runMigrations();
 
 	const app = express();
 
