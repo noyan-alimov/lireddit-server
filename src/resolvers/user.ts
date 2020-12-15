@@ -37,31 +37,21 @@ class UserResponse {
 	user?: User;
 }
 
-@ObjectType()
-class UserPosts {
-	@Field(() => User)
-	user: User;
-
-	@Field(() => [Post])
-	posts: Post[];
-}
-
 @Resolver()
 export class UserResolver {
-	@Query(() => UserPosts, { nullable: true })
+	@Query(() => User, { nullable: true })
 	async getUser(
 		@Arg('userId', () => Int) userId: number
-	): Promise<UserPosts | undefined> {
+	): Promise<User | undefined> {
 		const user = await User.findOne(userId);
 		if (!user) {
 			return undefined;
 		}
 
 		const posts = await Post.find({ creatorId: userId });
-		return {
-			user,
-			posts,
-		};
+		user.posts = posts;
+
+		return user;
 	}
 
 	@Mutation(() => UserResponse)
