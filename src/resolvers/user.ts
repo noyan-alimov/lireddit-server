@@ -6,6 +6,7 @@ import {
 	Arg,
 	Ctx,
 	Field,
+	Int,
 	Mutation,
 	ObjectType,
 	Query,
@@ -16,6 +17,7 @@ import { UsernamePasswordInput } from '../types/UsernamePasswordInput';
 import { validateRegister } from '../utils/validateRegister';
 import { sendEmail } from '../utils/sendEmail';
 import { v4 } from 'uuid';
+import { Post } from '../entities/Post';
 
 @ObjectType()
 class FieldError {
@@ -35,8 +37,33 @@ class UserResponse {
 	user?: User;
 }
 
+@ObjectType()
+class UserPosts {
+	@Field(() => User)
+	user: User;
+
+	@Field(() => [Post])
+	posts: Post[];
+}
+
 @Resolver()
 export class UserResolver {
+	@Query(() => UserPosts, { nullable: true })
+	async getUser(
+		@Arg('userId', () => Int) userId: number
+	): Promise<UserPosts | undefined> {
+		const user = await User.findOne(userId);
+		if (!user) {
+			return undefined;
+		}
+
+		const posts = await Post.find({ creatorId: userId });
+		return {
+			user,
+			posts,
+		};
+	}
+
 	@Mutation(() => UserResponse)
 	async changePassword(
 		@Arg('token') token: string,

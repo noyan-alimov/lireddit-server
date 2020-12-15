@@ -16,12 +16,12 @@ import { Post } from './entities/Post';
 import path from 'path';
 
 const main = async () => {
-	const conn = await createConnection({
+	await createConnection({
 		type: 'postgres',
 		database: 'lireddit2',
 		username: 'postgres',
 		password: 'password',
-		synchronize: false,
+		synchronize: true,
 		entities: [Post, User],
 		migrations: [path.join(__dirname, './migrations/*')],
 		logging: true,
@@ -29,8 +29,6 @@ const main = async () => {
 			migrationsDir: 'migrations',
 		},
 	});
-
-	await conn.runMigrations();
 
 	const app = express();
 

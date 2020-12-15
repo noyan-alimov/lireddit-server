@@ -33,6 +33,17 @@ const paginatePosts = (page: number, selection: Post[]) => {
 
 @Resolver()
 export class PostResolver {
+	@Query(() => [Post], { nullable: true })
+	async getPostByUserId(
+		@Arg('userId', () => Int) userId: number
+	): Promise<Post[] | undefined> {
+		const posts = await Post.find({ creatorId: userId });
+		if (!posts) {
+			return undefined;
+		}
+		return posts;
+	}
+
 	@Query(() => [Post])
 	async posts(
 		@Arg('page', () => Int) page: number
